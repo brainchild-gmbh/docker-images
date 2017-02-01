@@ -1,0 +1,18 @@
+#!/bin/bash
+
+OLDIFS=$IFS
+IFS=$'\n'
+
+echo "Search for repositories which are currently not authorized ..."
+lines=`apt-get update 2>&1 | grep "NO_PUBKEY"`
+
+for line in $lines
+do
+        url=`echo $line | sed 's/^.\+\s\+\(http[[:graph:]]\+\)\s\+.\+/\1/'`
+        key=`echo $line | sed 's/^.\+\s\+\([[:xdigit:]]\+\)$/\1/'`
+
+        echo "Import key for $url $key ..."
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $key
+done
+
+IFS=$OLDIFS
