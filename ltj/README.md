@@ -1,7 +1,8 @@
 # Linux Tomcat Java Docker Image
 Official source of the [Docker](https://www.docker.com) image 
-[brainchild/ltj](https://hub.docker.com/r/brainchild/ltj). It is based on Ubuntu and 
-provides a [Tomcat](https://tomcat.apache.org) server using the latest 
+[brainchild/ltj](https://hub.docker.com/r/brainchild/ltj). It is based 
+on [Ubuntu](https://ubuntu.com) and provides a 
+[Tomcat](https://tomcat.apache.org) server using the latest 
 [Oracle Java](http://www.oracle.com/technetwork/java/javase/downloads/index.html) from 
 https://launchpad.net/~webupd8team/+archive/ubuntu/java.
 
