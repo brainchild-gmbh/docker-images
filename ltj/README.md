@@ -29,5 +29,5 @@ ommit this option if want to use the standard configuration files provided by to
 
 ## Sub-sequent runs
 On sub-sequent runs you can use the container name you specified on the first run.
-`docker docker start <container name>`
+`docker start <container name>`
 
