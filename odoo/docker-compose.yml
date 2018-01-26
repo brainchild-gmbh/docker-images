@@ -1,0 +1,39 @@
+version: '3'
+  
+services:
+        
+    # Postgres database service
+    postgres:
+        container_name: postgres${POSTGRES_VERSION}
+        image: postgres:${POSTGRES_VERSION}
+        
+        environment:
+            - POSTGRES_USER=odoo
+            - POSTGRES_PASSWORD=odoo
+            - PGDATA=/var/lib/postgresql/data/pgdata
+        
+        ports:
+            - "${POSTGRES_LOCAL_PORT}:5432"
+        
+        volumes:
+            - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data/pgdata
+    
+    # Odoo service  
+    odoo:
+        container_name: odoo${ODOO_VERSION}
+        image: brainchild/odoo:${ODOO_VERSION}
+        
+        depends_on:
+            - postgres
+        
+        links:
+            - postgres:db
+    
+        ports:
+            - "${ODOO_HTTP_LOCAL_PORT}:8069"
+    
+        # Enable the volumes to provide your local content
+        #volumes:
+            #- ${ODOO_EXTRA_ADDONS_PATH}:/mnt/extra-addons  
+            #- ${ODOO_ADDONS_PATH}:/usr/lib/python2.7/dist-packages/odoo/addons
+            #- ${ODOO_CONFIG_PATH}:/etc/odoo
