@@ -1,6 +1,12 @@
-FROM debian:jessie
+# The debian version to be used.
+ARG OS_VERSION
+
+FROM debian:${OS_VERSION}
 
 MAINTAINER brainchild GmbH <docker@brain-child.de>
+
+# The debian version to be used.
+ARG OS_VERSION
 
 # Build args. Maybe overwritten during build using --build-arg option.
 # Enter the version number of odoo: http://nightly.odoo.com/<version>/nightly/deb/odoo_<version>.<release>_all.deb
@@ -9,13 +15,8 @@ ARG ODOO_VERSION=11.0
 # Enter the release number of odoo: http://nightly.odoo.com/<version>/nightly/deb/odoo_<version>.<release>_all.deb
 ARG ODOO_RELEASE=latest
 
-# Enter the version number of wkhtmltox: http://nightly.odoo.com/extra/wkhtmltox-<version>_linux-jessie-amd64.deb
-ARG WKHTMLTOX_VERSION=0.12.1.2
-
-# Environment variables
-ENV ENV_ODOO_VERSION=${ODOO_VERSION}
-ENV ENV_ODOO_RELEASE=${ODOO_RELEASE}
-ENV ENV_WKHTMLTOX_VERSION=${WKHTMLTOX_VERSION}
+# Enter the version number of wkhtmltox: http://nightly.odoo.com/extra/wkhtmltox-<version>_linux-${OS_VERSION}-amd64.deb
+ARG WKHTMLTOX_VERSION=0.12.2.1
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN set -x; \
@@ -30,19 +31,16 @@ RUN set -x; \
             python-support \
             python-watchdog \
             cython \
-        && curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${ENV_WKHTMLTOX_VERSION}_linux-jessie-amd64.deb \
+        && curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOX_VERSION}_linux-${OS_VERSION}-amd64.deb \
         && dpkg --force-depends -i wkhtmltox.deb \
         && apt-get -y install -f --no-install-recommends \
         && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false npm \
         && rm -rf /var/lib/apt/lists/* wkhtmltox.deb \
         && pip install psycogreen==1.0 pgen pydevd
 
-# Install PyDev speedups
-#RUN /usr/bin/python /usr/local/lib/python2.7/dist-packages/setup_cython.py build_ext --inplace
-
 # Install Odoo
 RUN set -x; \
-        curl -o odoo.deb -SL http://nightly.odoo.com/${ENV_ODOO_VERSION}/nightly/deb/odoo_${ENV_ODOO_VERSION}.${ENV_ODOO_RELEASE}_all.deb \
+        curl -o odoo.deb -SL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
         && dpkg --force-depends -i odoo.deb \
         && apt-get update \
         && apt-get -y install -f --no-install-recommends \
