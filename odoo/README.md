@@ -146,3 +146,14 @@ determine the versions available refer to
 The files provided there conform to the following format:
 
     wkhtmltox-${WKHTMLTOX_VERSION}_linux-jessie-amd64.deb
+
+### Useful docker commands
+If you want to remove all docker containers perform the following command:
+
+    # Delete all containers
+    docker rm $(docker ps -a -q)
+    
+If you want to remove all docker images perform the following command:
+
+    # Delete all images
+    docker rmi $(docker images -q)
