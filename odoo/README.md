@@ -85,6 +85,9 @@ This environment variable is used to provide a path to which Postgres shall
 store its database data to. This is useful if the data shall be used in 
 different containers or to provide a predefined data set to Postgres.
 
+__Note:__ In order to use this environment variable the appropriate volume must
+be enabled within the `docker-compose.yml`.
+
 ## Remote debugging Odoo
 Remote debugging Odoo or a Python application in general is done using a so 
 called PyDev server. The host runs the server and the target, i.e. Odoo 
@@ -121,7 +124,12 @@ Building the image is quite easy. The Dockerfile was implemented to be
 independent from the Odoo and _wkhtmltox_ version to be used. Those versions
 have default values but can be overridden using build arguments:
 
-    docker build -t brainchild/odoo:10.0 --build-arg ODOO_VERSION=10.0 --build-arg ODOO_RELEASE=latest --build-arg WKHTMLTOX_VERSION=0.12.1.2 
+    docker build -t brainchild/odoo:10.0 --build-arg OS_VERSION=jessie --build-arg ODOO_VERSION=10.0 --build-arg ODOO_RELEASE=latest --build-arg WKHTMLTOX_VERSION=0.12.2.1 
+
+### OS\_VERSION
+This mandatory variable specifies the operating system version to be used. Only
+those versions can be used for which Odoo is available 
+(see: [Odoo builds page](http://nightly.odoo.com)).
 
 ### ODOO\_VERSION
 Specifies the version of Odoo for which to build the image. In order to 
