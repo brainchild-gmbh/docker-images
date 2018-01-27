@@ -126,6 +126,12 @@ have default values but can be overridden using build arguments:
 
     docker build -t brainchild/odoo:10.0 --build-arg OS_VERSION=jessie --build-arg ODOO_VERSION=10.0 --build-arg ODOO_RELEASE=latest --build-arg WKHTMLTOX_VERSION=0.12.2.1 
 
+__Note:__ The following files are built into image:
+
+- entrypoint.sh
+- odoo.conf
+- test-remote-debug.py
+
 ### OS\_VERSION
 This mandatory variable specifies the operating system version to be used. Only
 those versions can be used for which Odoo is available 
