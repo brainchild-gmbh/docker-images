@@ -16,7 +16,7 @@ ARG ODOO_VERSION=11.0
 ARG ODOO_RELEASE=latest
 
 # Enter the version number of wkhtmltox: http://nightly.odoo.com/extra/wkhtmltox-<version>_linux-${OS_VERSION}-amd64.deb
-ARG WKHTMLTOX_VERSION=0.12.2.1
+ARG WKHTMLTOX_VERSION=0.12.4
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN set -x; \
@@ -25,18 +25,19 @@ RUN set -x; \
             ca-certificates \
             curl \
             node-less \
-            python-gevent \
             python-pip \
+            python-setuptools \
             python-renderpm \
             python-support \
             python-watchdog \
+            xz-utils \
             cython \
-        && curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOX_VERSION}_linux-${OS_VERSION}-amd64.deb \
-        && dpkg --force-depends -i wkhtmltox.deb \
-        && apt-get -y install -f --no-install-recommends \
-        && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false npm \
-        && rm -rf /var/lib/apt/lists/* wkhtmltox.deb \
-        && pip install psycogreen==1.0 pgen pydevd
+        && curl -o wkhtmltox.tar.xz -SL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOX_VERSION}/wkhtmltox-${WKHTMLTOX_VERSION}_linux-generic-amd64.tar.xz \
+        && tar xvf wkhtmltox.tar.xz \
+        && cp wkhtmltox/lib/* /usr/local/lib/ \
+        && cp wkhtmltox/bin/* /usr/local/bin/ \
+        && cp -r wkhtmltox/share/man/man1 /usr/local/share/man/ \
+        && pip install psycogreen==1.0 pgen pydevd num2words xlwt
 
 # Install Odoo
 RUN set -x; \
@@ -51,13 +52,13 @@ COPY ./test-remote-debug.py /
 COPY ./entrypoint.sh /
 COPY ./odoo.conf /etc/odoo/
 
-RUN id -u odoo &>/dev/null || useradd odoo
-
-RUN chown odoo /etc/odoo/odoo.conf
-
-# Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
-RUN mkdir -p /mnt/extra-addons \
-        && chown -R odoo /mnt/extra-addons
+RUN set -x; \
+       chmod +x /test-remote-debug.py \
+    && chmod +x /entrypoint.sh \
+    && id -u odoo &> /dev/null || useradd odoo \
+    && chown odoo /etc/odoo/odoo.conf \
+    && mkdir -p /mnt/extra-addons \
+    && chown -R odoo /mnt/extra-addons
 
 VOLUME ["/etc/odoo", "/var/lib/odoo", "/mnt/extra-addons", "/usr/lib/python2.7/dist-packages/odoo/addons"]
 
