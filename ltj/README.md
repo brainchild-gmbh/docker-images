@@ -38,19 +38,6 @@ are provided within the `.env` file. `docker-compose` reads this file and passes
 the environment variables to the `docker-compose.yml` in order for variable 
 substitution.
 
-## Building the brainchild LTJ image
-Building the image is quite easy. The Dockerfile was implemented to be 
-independent from the Ubuntu Tomcat and Java version to be used. Those versions
-have default values but can be overridden using build arguments:
-
-    docker build -t brainchild/ltj:18.8.9 --build-arg OS_VERSION=bionic --build-arg JAVA_VERSION=9 --build-arg TOMCAT_VERSION=8 
-
-### OS\_VERSION
-This mandatory variable specifies the operating system version to be used. 
-
-__Note:__ Only the name of the particular version must be used. 
-(see: [ubuntu docker images](https://hub.docker.com/_/ubuntu)).
-
 ### BRAINCHILD\_LTJ\_VERSION
 Specifies the release number of the brainchild LTJ image. In order to 
 determine the versions available refer to 
@@ -74,6 +61,28 @@ configuration.
 
 __Note:__ In order to use this environment variable the appropriate volume must
 be enabled within the `docker-compose.yml`.
+
+## Building the brainchild LTJ image
+Building the image is quite easy. The Dockerfile was implemented to be 
+independent from the Ubuntu Tomcat and Java version to be used. Those versions
+have default values but can be overridden using build arguments:
+
+    docker build -t brainchild/ltj:18.8.9 --build-arg OS_VERSION=bionic --build-arg JAVA_VERSION=9 --build-arg TOMCAT_VERSION=8 
+
+### OS\_VERSION
+This mandatory variable specifies the operating system version to be used. 
+
+__Note:__ Only the name of the particular version must be used. 
+(see: [ubuntu docker images](https://hub.docker.com/_/ubuntu)).
+
+### JAVA\_VERSION
+The major version of Java to be used.
+
+### TOMCAT\_VERSION
+The major version of Apache Tomcat to be used.
+
+### LIB\_SERVLET\_VERSION
+The version of the `Libservlet<version>-java` package to be used.
 
 ### Useful docker commands
 If you want to remove all docker containers perform the following command:
