@@ -58,6 +58,7 @@ RUN set -x; \
     && id -u odoo &> /dev/null || useradd odoo \
     && chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/extra-addons \
+    && chown -R odoo /usr/lib/python2.7/dist-packages/odoo \
     && chown -R odoo /mnt/extra-addons
 
 VOLUME ["/etc/odoo", "/var/lib/odoo", "/mnt/extra-addons", "/usr/lib/python2.7/dist-packages/odoo/addons"]

@@ -124,7 +124,7 @@ Building the image is quite easy. The Dockerfile was implemented to be
 independent from the Odoo and _wkhtmltox_ version to be used. Those versions
 have default values but can be overridden using build arguments:
 
-    docker build -t brainchild/odoo:10.0 --build-arg OS_VERSION=jessie --build-arg ODOO_VERSION=10.0 --build-arg ODOO_RELEASE=latest --build-arg WKHTMLTOX_VERSION=0.12.2.1 
+    docker build -t brainchild/odoo:10.0 --build-arg OS_VERSION=jessie --build-arg ODOO_VERSION=10.0 --build-arg ODOO_RELEASE=latest --build-arg WKHTMLTOX_VERSION=0.12.4 .
 
 __Note:__ The following files are built into image:
 
