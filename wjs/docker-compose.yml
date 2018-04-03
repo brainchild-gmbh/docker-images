@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+
+    # brainchild/wjs
+    jenkins:
+        container_name: wjs${BRAINCHILD_WJS_VERSION}
+        image: brainchild/wjs:${BRAINCHILD_WJS_VERSION}
+
+        env_file:
+          - .env
+        ports:
+            - "${JENKINS_LOCAL_PORT}:8080"
