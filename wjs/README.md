@@ -61,6 +61,9 @@ independent from the Microsoft Windows and Java version to be used. Those versio
 have default values but can be overridden using build arguments:
 
     docker build -t brainchild/wjs:10.10.0 --build-arg OS_VERSION=ltsc2016 --build-arg JAVA_VERSION=10 .
+    
+__Note:__ The Oracle JDK to be used need to be downloaded first and placed into
+the folder of the Docker file.
 
 ### OS\_VERSION
 This mandatory variable specifies the operating system version to be used.
@@ -69,7 +72,13 @@ __Note:__ Only the name of the particular version must be used.
 (see: [Microsoft Windows docker images](https://hub.docker.com/r/microsoft/windowsservercore)).
 
 ### JAVA\_VERSION
-The major version of Java to be used.
+The version of Java to be used. The version must conform to the one encoded within
+the Oracle JDK installer file name.
+
+    jdk-<version>_windows-x64_bin.exe
+    
+    # Example using Java 10.
+    jdk-10_windows-x64_bin
 
 ### Useful docker commands
 If you want to remove all docker containers perform the following command:
