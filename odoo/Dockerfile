@@ -1,22 +1,19 @@
-# The debian version to be used.
+#The debian version to be used.
 ARG OS_VERSION
 
 FROM debian:${OS_VERSION}
 
 MAINTAINER brainchild GmbH <docker@brain-child.de>
 
-# The debian version to be used.
-ARG OS_VERSION
-
 # Build args. Maybe overwritten during build using --build-arg option.
 # Enter the version number of odoo: http://nightly.odoo.com/<version>/nightly/deb/odoo_<version>.<release>_all.deb
-ARG ODOO_VERSION=11.0
+ARG ODOO_VERSION=12.0
 
 # Enter the release number of odoo: http://nightly.odoo.com/<version>/nightly/deb/odoo_<version>.<release>_all.deb
 ARG ODOO_RELEASE=latest
 
-# Enter the version number of wkhtmltox: http://nightly.odoo.com/extra/wkhtmltox-<version>_linux-${OS_VERSION}-amd64.deb
-ARG WKHTMLTOX_VERSION=0.12.4
+# Enter the version number of wkhtmltox: https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOX_VERSION}/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb
+ARG WKHTMLTOX_VERSION=0.12.5
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN set -x; \
@@ -24,20 +21,40 @@ RUN set -x; \
         && apt-get install -y --no-install-recommends \
             ca-certificates \
             curl \
+	    dirmngr \
+            fonts-noto-cjk \
+            gnupg \
+            libssl1.0-dev \
             node-less \
-            python-pip \
-            python-setuptools \
-            python-renderpm \
-            python-support \
-            python-watchdog \
-            xz-utils \
+            python3-pip \
+            python3-pyldap \
+            python3-qrcode \
+            python3-renderpm \
+            python3-setuptools \
+            python3-vobject \
+            python3-watchdog \
+	    xz-utils \
             cython \
-        && curl -o wkhtmltox.tar.xz -SL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOX_VERSION}/wkhtmltox-${WKHTMLTOX_VERSION}_linux-generic-amd64.tar.xz \
-        && tar xvf wkhtmltox.tar.xz \
-        && cp wkhtmltox/lib/* /usr/local/lib/ \
-        && cp wkhtmltox/bin/* /usr/local/bin/ \
-        && cp -r wkhtmltox/share/man/man1 /usr/local/share/man/ \
-        && pip install psycogreen==1.0 pgen pydevd num2words xlwt
+	    postgresql-client \
+	&& curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOX_VERSION}/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb \
+        && echo '7e35a63f9db14f93ec7feeb0fce76b30c08f2057 wkhtmltox.deb' | sha1sum -c - \
+        && dpkg --force-depends -i wkhtmltox.deb\
+        && apt-get -y install -f --no-install-recommends \
+	&& rm -rf /var/lib/apt/lists/* wkhtmltox.deb
+
+# Install rtlcss (on Debian stretch)
+RUN set -x;\
+    	echo "deb http://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list \
+    	&& export GNUPGHOME="$(mktemp -d)" \
+    	&& repokey='9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280' \
+    	&& gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" \
+    	&& gpg --armor --export "${repokey}" | apt-key add - \
+    	&& gpgconf --kill all \
+   	&& rm -rf "$GNUPGHOME" \
+    	&& apt-get update \
+    	&& apt-get install -y nodejs \
+    	&& npm install -g rtlcss \
+    	&& rm -rf /var/lib/apt/lists/*
 
 # Install Odoo
 RUN set -x; \
@@ -45,9 +62,11 @@ RUN set -x; \
         && dpkg --force-depends -i odoo.deb \
         && apt-get update \
         && apt-get -y install -f --no-install-recommends \
-        && rm -rf /var/lib/apt/lists/* odoo.deb
+        && rm -rf /var/lib/apt/lists/* odoo.deb \
+	&& chown -R odoo /usr/lib/python3/dist-packages/odoo
 
 # Copy entrypoint script and Odoo configuration file
+RUN pip3 install num2words xlwt
 COPY ./test-remote-debug.py /
 COPY ./entrypoint.sh /
 COPY ./odoo.conf /etc/odoo/
@@ -55,13 +74,11 @@ COPY ./odoo.conf /etc/odoo/
 RUN set -x; \
        chmod +x /test-remote-debug.py \
     && chmod +x /entrypoint.sh \
-    && id -u odoo &> /dev/null || useradd odoo \
     && chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /usr/lib/python2.7/dist-packages/odoo \
     && chown -R odoo /mnt/extra-addons
 
-VOLUME ["/etc/odoo", "/var/lib/odoo", "/mnt/extra-addons", "/usr/lib/python2.7/dist-packages/odoo/addons"]
+VOLUME ["/etc/odoo", "/var/lib/odoo", "/mnt/extra-addons", "/usr/lib/python3/dist-packages/odoo/addons"]
 
 # Expose Odoo services
 EXPOSE 8069 8071
