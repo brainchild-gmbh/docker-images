@@ -15,7 +15,7 @@ ARG ODOO_RELEASE=latest
 # Enter the version number of wkhtmltox: https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb
 ARG WKHTMLTOX_VERSION=0.12.5
 
-# Set the Debian release again. Otherwise it does net get used in the next step.
+# Set the Debian release again. Otherwise it does not get used in the next step.
 ARG OS_VERSION
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
