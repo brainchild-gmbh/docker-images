@@ -12,8 +12,11 @@ ARG ODOO_VERSION=12.0
 # Enter the release number of odoo: http://nightly.odoo.com/<version>/nightly/deb/odoo_<version>.<release>_all.deb
 ARG ODOO_RELEASE=latest
 
-# Enter the version number of wkhtmltox: https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOX_VERSION}/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb
+# Enter the version number of wkhtmltox: https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb
 ARG WKHTMLTOX_VERSION=0.12.5
+
+# Set the Debian release again. Otherwise it does net get used in the next step.
+ARG OS_VERSION
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN set -x; \
@@ -36,8 +39,8 @@ RUN set -x; \
 	    xz-utils \
             cython \
 	    postgresql-client \
-	&& curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOX_VERSION}/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb \
-        && echo '7e35a63f9db14f93ec7feeb0fce76b30c08f2057 wkhtmltox.deb' | sha1sum -c - \
+  && curl -o wkhtmltox.deb -sSL https://downloads.wkhtmltopdf.org/0.12/${WKHTMLTOX_VERSION}/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb \
+        && echo '1140b0ab02aa6e17346af2f14ed0de807376de475ba90e1db3975f112fbd20bb wkhtmltox.deb' | sha256sum -c - \
         && dpkg --force-depends -i wkhtmltox.deb\
         && apt-get -y install -f --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/* wkhtmltox.deb
