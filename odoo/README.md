@@ -124,7 +124,7 @@ Building the image is quite easy. The Dockerfile was implemented to be
 independent from the Odoo and _wkhtmltox_ version to be used. Those versions
 have default values but can be overridden using build arguments:
 
-    docker build -t brainchild/odoo:12.0 --build-arg OS_VERSION=stretch --build-arg ODOO_VERSION=12.0 --build-arg ODOO_RELEASE=latest --build-arg WKHTMLTOX_VERSION=0.12.5 .
+    docker build -t brainchild/odoo:12.0 --build-arg OS_VERSION=stretch --build-arg ODOO_VERSION=12.0 --build-arg ODOO_RELEASE=latest --build-arg WKHTMLTOX_VERSION=0.12.5 --build-arg POSTGRES_CLIENT_VERSION=10 .
 
 __Note:__ The following files are built into image:
 
@@ -160,6 +160,14 @@ determine the versions available refer to
 The files provided there conform to the following format:
 
 		wkhtmltox_${WKHTMLTOX_VERSION}-1.stretch_amd64.deb
+
+### POSTGRES\_CLIENT\_VERSION
+Specifies the version of the postgresql-client to be used. In order to determine the versions availiable refer to
+[PostgreSQL Apt Repository](ihttps://www.postgresql.org/download/linux/debian/).
+For Odoo 12 it is recommended to use Version 10. Otherwise you will run into issues when trying to backup the database.
+The Format to be used is:
+
+		postgresql-client-${POSTGRES_CLIENT_VERSION}
 
 ### Useful docker commands
 If you want to remove all docker containers perform the following command:

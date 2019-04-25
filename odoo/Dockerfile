@@ -16,6 +16,9 @@ ARG ODOO_RELEASE=latest
 # Enter the version number of wkhtmltox: https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb
 ARG WKHTMLTOX_VERSION=0.12.5
 
+# Enter the Postgresql Client Version to be used. It should match the the version of the Postgresql Server Image. 
+ARG POSTGRES_CLIENT_VERSION=10
+
 # Set the Debian release again. Otherwise it does not get used in the next step.
 ARG OS_VERSION
 
@@ -39,12 +42,19 @@ RUN set -x; \
             python3-watchdog \
 	    xz-utils \
             cython \
-	    postgresql-client \
+	    wget \
   && curl -o wkhtmltox.deb -sSL https://downloads.wkhtmltopdf.org/0.12/${WKHTMLTOX_VERSION}/wkhtmltox_${WKHTMLTOX_VERSION}-1.${OS_VERSION}_amd64.deb \
         && echo '1140b0ab02aa6e17346af2f14ed0de807376de475ba90e1db3975f112fbd20bb wkhtmltox.deb' | sha256sum -c - \
         && dpkg --force-depends -i wkhtmltox.deb\
         && apt-get -y install -f --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/* wkhtmltox.deb
+
+# Add the PostgreSQL Apt Repository and install the PostgreSQL Client
+RUN set -x;\
+        echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' >  /etc/apt/sources.list.d/pgdg.list \
+        && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+        && apt-get update \
+        && yes Y | apt-get install postgresql-client-${POSTGRES_CLIENT_VERSION}
 
 # Install rtlcss (on Debian stretch)
 RUN set -x;\
